@@ -1,4 +1,5 @@
-{-Apunts varis_______________________________________________________________
+{-===========================================================================
+Apunts varis
 x -> un element
 xs -> molts elements (plural de x)
 ys, zs -> altres llistes
@@ -6,19 +7,23 @@ _ -> algun element no necessari
 : -> símbol de unió
 => -> restricció
 | -> condicional guard (if, elseif, else)
-`-}
+`_` -> serveix per fer la funció infixa (quan compares dos arguments i ho has de posar al mig)
+elem -> mira si és o no dins la llista
+even -> mira si és parell
+odd -> mira si és senar
+===========================================================================-}
 
 --Haskell notes de laboratori (1)
 
---===========================================================================
+-- ===========================================================================
 --Exercici 1
---===========================================================================
+-- ===========================================================================
 
 --La funció f implementa l'algoritme Quicksort, ja que veiem que escull un pivot x, que serà el primer element i ordena recursivament i concatena elements.
 
---===========================================================================
+-- ===========================================================================
 --Exercici 2
---===========================================================================
+-- ===========================================================================
 
 --head: primer element
 myHead :: [a] -> a --Determinem array d'elements d'entrada i array d'elements de sortida
@@ -62,9 +67,9 @@ myReverse :: [a] -> [a]
 myReverse [] = []
 myReverse (x:xs) = myReverse xs ++ [x] --Inverteix la resta i posa x al final. Actua de forma recursiva
 
---===========================================================================
+-- ===========================================================================
 --Exercici 3
---===========================================================================
+-- ===========================================================================
 
 --last: últim element
 myLast :: [a] -> a
@@ -78,9 +83,9 @@ myInit [] = error "myInit: empty list"
 myInit [_] = [] --En arribar al cas de només un element, aquest s'elimina
 myInit (x:xs) = x : myInit xs --Guardem x i tornem de manera recursiva
 
---===========================================================================
+-- ===========================================================================
 --Exercici 4
---===========================================================================
+-- ===========================================================================
 
 --sumarQuadrats: suma dels quadrats dels elements
 sumarQuadrats :: Num a => [a] -> a
@@ -107,9 +112,27 @@ esPalindrom2 [_] = True
 esPalindrom2 xs =
   head xs == last xs && esPalindrom2 (init (tail xs)) --Compara el primer valor i l'últim, fa la funció recursiva sense el primer i últim valor
   
---===========================================================================
+--partirLlista: divideix una llista en dues parts segons un índex n
+partirLlista :: Int -> [a] -> ([a],[a]) --Rep un enter n i una llista, retorna una tupla amb dues llistes
+partirLlista n xs = (myTake n xs, myDrop n xs) --La primera part són els n primers elements (myTake), i la segona part és la resta de la llista (myDrop)
+
+--rotarLlista: rota una llista n posicions cap a l’esquerra
+rotarLlista :: Int -> [a] -> [a]
+rotarLlista _ [] = [] --Si la llista és buida, retornem llista buida independentment del nombre n
+rotarLlista n xs = myDrop k xs ++ myTake k xs --Usem myDrop per eliminar els k primers nombres i myTake per afegir seguidament els k primers nombres
+  where
+    k = n `mod` myLength xs --Si n és més gran que el nombre de valors de la llista, ajustem aquest valor amb el mòdul
+
+--filtrarParells: retorna només els nombres parells d’una llista d'enters
+filtrarParells :: [Int] -> [Int]
+filtrarParells [] = []
+filtrarParells (x:xs)
+  | even x = x : filtrarParells xs --Si x és parell, l'afegim al resultat i continuem analitzant recursivament. even és una funció que mira si són parells
+  | otherwise = filtrarParells xs --Si no ho és, no l'afegim i continuem analitzant recursivament
+
+-- ===========================================================================
 --Definim el main per a que compili el programa
---===========================================================================
+-- ===========================================================================
 
 main :: IO ()
 main = do
@@ -132,3 +155,7 @@ main = do
   print(esPalindrom1 [1,2,3,4,5])
   print (esPalindrom2 [1,2,3,2,1])
   print(esPalindrom2 [1,2,3,4,5])
+  print (partirLlista 2 [1,2,3,4,5])
+  print (rotarLlista 2 [1,2,3,4,5])
+  print (rotarLlista 7 [1,2,3,4,5])
+  print (filtrarParells [1,2,3,4,5])
