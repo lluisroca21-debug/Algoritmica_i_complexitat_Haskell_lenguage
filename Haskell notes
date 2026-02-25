@@ -1,0 +1,103 @@
+{-Apunts varis_______________________________________________________________
+x -> un element
+xs -> molts elements (plural de x)
+ys, zs -> altres llistes
+_ -> algun element no necessari
+: -> símbol de unió
+=> -> restricció
+| -> condicional guard (if, elseif, else)
+`-}
+
+--Haskell notes de laboratori (1)
+
+--Exercici 1_________________________________________________________________
+
+--La funció f implementa l'algoritme Quicksort, ja que veiem que escull un pivot x, que serà el primer element i ordena recursivament i concatena elements.
+
+--Exercici 2_________________________________________________________________
+
+-- head: primer element
+main :: IO ()
+main = print (myHead [1,2,3,4,5])
+myHead :: [a] -> a --Determinem array d'elements d'entrada i array d'elements de sortida
+myHead (x:_) = x --Si la llista és x seguida de la resta, retorna x (primer element de la llista)
+myHead [] = error "myHead: empty list"
+
+-- tail: tot menys el primer
+main :: IO ()
+main = print (myTail [1,2,3,4,5])
+myTail :: [a] -> [a]
+myTail (_:xs) = xs --Si la llista és x resta seguida de altres elements (xs), elimina aquesta resta i retorna els elements xs
+myTail [] = error "myTail: empty list"
+
+-- take: agafa n primers
+main :: IO ()
+main = print (myTake 3 [1,2,3,4,5])
+myTake :: Int -> [a] -> [a] --En aquest tenim una funció que rep un integer i retorna una funció que rep un array i retorna un array
+myTake n _ | n <= 0 = [] --Si n és 0 o negatiu, no agafem res, per tant, retornem una llista buida
+myTake _ [] = [] --Si la llista és buida, no agafem res, per tant, retornem una llista buida
+myTake n (x:xs) = x : myTake (n-1) xs --Agafa el primer element i els n-1 elements de xs (mytake agafa el primer element restant, per tant, fa com un bucle)
+
+-- drop: elimina n primers
+main :: IO ()
+main = print (myDrop 3 [1,2,3,4,5])
+myDrop :: Int -> [a] -> [a] --La funció rep un integer i retorna una funció que rep un array i retorna un array
+myDrop n xs | n <= 0 = xs --Si n és 0 o negatiu, no llençem res, per tant, retornem xs (tots els elements de la llista)
+myDrop _ [] = [] 
+myDrop n (_:xs) = myDrop (n-1) xs --Llença el primer element i continua llençant els elements n-1 vegades (actua com un bucle)
+
+-- length: mida
+main :: IO ()
+main = print (myLength [1,2,3,4,5])
+myLength :: [a] -> Int
+myLength [] = 0
+myLength (_:xs) = 1 + myLength xs --Actua de forma recursiva
+
+-- sum: suma (llista numèrica)
+main :: IO ()
+main = print (mySum [1,2,3,4,5])
+mySum :: Num a => [a] -> a --Restricció: els elements han de ser Num (int, Float, double) és un typeclass
+mySum [] = 0
+mySum (x:xs) = x + mySum xs --Actua de forma recursiva
+
+-- product: producte (llista numèrica)
+main :: IO ()
+main = print (myProduct [1,2,3,4,5])
+myProduct :: Num a => [a] -> a --Restricció: els elements han de ser Num (int, Float, double)
+myProduct [] = 1 --El producte de la llista buida és 1, ja que 1 és l'element neutre del producte
+myProduct (x:xs) = x * myProduct xs --Actua de forma recursiva
+
+-- reverse: invertir
+main :: IO ()
+main = print (myReverse [1,2,3,4,5])
+myReverse :: [a] -> [a]
+myReverse [] = []
+myReverse (x:xs) = myReverse xs ++ [x] --Inverteix la resta i posa x al final. Actua de forma recursiva
+
+--Exercici 3_________________________________________________________________
+
+main :: IO ()
+main = print (myLast [1,2,3,4,5])
+myLast :: [a] -> a
+myLast [] = error "myLast: empty list"
+myLast [x] = x --Si només queda un, aquest és l'últim
+myLast (_:xs) = myLast xs --Nentre quedin més d'un, s'anirà treient recursivament
+
+main :: IO ()
+main = print (myInit [1,2,3,4,5])
+myInit :: [a] -> [a]
+myInit [] = error "myInit: empty list"
+myInit [_] = [] --En arribar al cas de només un element, aquest s'elimina
+myInit (x:xs) = x : myInit xs --Guardem x i tornem de manera recursiva
+
+--Exercici 4_________________________________________________________________
+
+sumarQuadrats :: Num a => [a] -> a
+sumarQuadrats [] = 0
+sumarQuadrats [x:xs] = x*x + sumarQuadrats de xs
+
+esborrarDuplicats :: [Int] -> [Int]
+esborrarDuplicats [] = []
+esborrarDuplicats (x:xs)
+  | x `elem` xs = esborrarDuplicats xs --Si x ja està en xs, fem funció amb xs (elem és una funció haskell que retornà un booleà de si és o no dins la llista)
+  | otherwise   = x : esborrarDuplicats xs --Si x no està en rest, l'afegim al capdavant i fem funció en xs
