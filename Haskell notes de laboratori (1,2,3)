@@ -8,7 +8,7 @@ ys, zs -> altres llistes
 _ -> algun element no necessari
 : -> símbol de unió
 => -> restricció
-| -> condicional guard (if, elseif, else)
+| -> condicional guard (if, elseif, else). També pot ser un 'or'
 `_` -> serveix per fer la funció infixa (quan compares dos arguments i ho has de posar al mig)
 elem -> mira si és o no dins la llista
 even -> mira si és parell
@@ -229,6 +229,106 @@ sumarQuadratsRec (x:xs) = x*x + sumarQuadratsRec xs
 --sumarQuadratsMapFold: map + fold combinats
 sumarQuadratsMapFold :: Num a => [a] -> a
 sumarQuadratsMapFold xs = foldl (+) 0 (map (\x -> x*x) xs) --map suma els quadrats de cada element. el primer () és la funció i el segon () és la llista que se dona. El fold simplement suma tots els elements de l'array d'esquerra a dreta.
+
+-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-- Haskell notes de laboratori (3)
+-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+-- ===========================================================================
+-- Exercici 1
+-- ===========================================================================
+
+--definició del tipus de dades:
+data FormaGeometricaRegular --Definim una tipus de dades (Formes Geomètriques Regulars)
+  = Triangle Float --Pot ser triangle amb float, o rectangle amb float, o pentagon amb float o hexagon amb float, o cercle amb float
+  | Rectangle Float
+  | Pentagon Float
+  | Hexagon Float
+  | Cercle Float
+
+--perimetre: calcula el perímetre d’una forma geomètrica regular
+perimetre :: FormaGeometricaRegular -> Float
+perimetre (Triangle costat)  = 3 * costat
+perimetre (Rectangle costat) = 4 * costat
+perimetre (Pentagon costat)  = 5 * costat
+perimetre (Hexagon costat)   = 6 * costat
+perimetre (Cercle radi)      = 2 * pi * radi
+
+--area: calcula l’àrea d’una forma geomètrica regular
+area :: FormaGeometricaRegular -> Float
+area (Triangle costat)  = (sqrt 3 / 4) * (costat ^ 2)
+area (Rectangle costat) = costat ^ 2
+area (Pentagon costat)  = (5/4) * (costat ^ 2) * (1 / tan (pi/5))
+area (Hexagon costat)   = (3 * sqrt 3 / 2) * (costat ^ 2)
+area (Cercle radi)      = pi * (radi ^ 2)
+
+
+-- ===========================================================================
+-- Exercici 2
+-- ===========================================================================
+
+--definició del tipus de dades (polígon regular o cercle):
+data FormaGeometricaRegular2
+  = Poligon Int Float   -- Poligon n costat
+  | Cercle2 Float       -- Cercle2 radi
+
+--perimetre2: perímetre usant un polígon parametritzat
+perimetre2 :: FormaGeometricaRegular2 -> Float
+perimetre2 (Poligon n costat) = fromIntegral n * costat
+perimetre2 (Cercle2 radi)     = 2 * pi * radi
+
+--area2: àrea usant un polígon parametritzat
+area2 :: FormaGeometricaRegular2 -> Float
+area2 (Poligon n costat) =
+  (fromIntegral n * costat^2) / (4 * tan (pi / fromIntegral n))
+area2 (Cercle2 radi) = pi * radi^2
+
+
+-- ===========================================================================
+-- Exercici 3
+-- ===========================================================================
+
+--definició de l'arbre binari:
+data ArbreB a = Fulla | Node a (ArbreB a) (ArbreB a)
+
+--sumaNodes: suma els valors dels nodes de l’arbre
+sumaNodes :: Num a => ArbreB a -> a
+sumaNodes Fulla = 0
+sumaNodes (Node valor esquerre dret) = valor + sumaNodes esquerre + sumaNodes dret
+
+
+-- ===========================================================================
+-- Exercici 4
+-- ===========================================================================
+
+--arbreLlista: recorre l’arbre en inordre i el converteix en llista
+arbreLlista :: ArbreB a -> [a]
+arbreLlista Fulla = []
+arbreLlista (Node valor esquerre dret) =
+  arbreLlista esquerre ++ [valor] ++ arbreLlista dret
+
+
+-- ===========================================================================
+-- Exercici 5
+-- ===========================================================================
+
+--existeixValor: comprova si un valor existeix dins l’arbre
+existeixValor :: Eq a => ArbreB a -> a -> Bool
+existeixValor Fulla _ = False
+existeixValor (Node valor esquerre dret) valorBuscat
+  | valor == valorBuscat = True
+  | otherwise = existeixValor esquerre valorBuscat || existeixValor dret valorBuscat
+
+
+-- ===========================================================================
+-- Exercici 6
+-- ===========================================================================
+
+--alçadaArbre: calcula l’alçada (profunditat màxima) d’un arbre binari
+alçadaArbre :: ArbreB a -> Int
+alçadaArbre Fulla = 0
+alçadaArbre (Node _ esquerre dret) = 1 + max (alçadaArbre esquerre) (alçadaArbre dret)
+
 
 -- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -- Definim el main per a que compili el programa
