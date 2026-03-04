@@ -1,5 +1,7 @@
-{-===========================================================================
-Apunts varis
+-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-- APUNTS VARIS
+{- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 x -> un element
 xs -> molts elements (plural de x)
 ys, zs -> altres llistes
@@ -11,18 +13,25 @@ _ -> algun element no necessari
 elem -> mira si és o no dins la llista
 even -> mira si és parell
 odd -> mira si és senar
-===========================================================================-}
 
---Haskell notes de laboratori (1)
+fromIntegral -> converteix un enter en decimal
+floor -> arrodoneix cap a baix a l'enter més proper
+takeWhile -> agafa tots els caràcters consecutius iguals a x
+dropWhile -> elimina tots els caràcters consecutius iguals a x
+\ -> definir una funció-}
+
+-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-- Haskell notes de laboratori (1)
+-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 -- ===========================================================================
---Exercici 1
+-- Exercici 1
 -- ===========================================================================
 
 --La funció f implementa l'algoritme Quicksort, ja que veiem que escull un pivot x, que serà el primer element i ordena recursivament i concatena elements.
 
 -- ===========================================================================
---Exercici 2
+-- Exercici 2
 -- ===========================================================================
 
 --head: primer element
@@ -68,7 +77,7 @@ myReverse [] = []
 myReverse (x:xs) = myReverse xs ++ [x] --Inverteix la resta i posa x al final. Actua de forma recursiva
 
 -- ===========================================================================
---Exercici 3
+-- Exercici 3
 -- ===========================================================================
 
 --last: últim element
@@ -84,7 +93,7 @@ myInit [_] = [] --En arribar al cas de només un element, aquest s'elimina
 myInit (x:xs) = x : myInit xs --Guardem x i tornem de manera recursiva
 
 -- ===========================================================================
---Exercici 4
+-- Exercici 4
 -- ===========================================================================
 
 --sumarQuadrats: suma dels quadrats dels elements
@@ -129,14 +138,106 @@ filtrarParells [] = []
 filtrarParells (x:xs)
   | even x = x : filtrarParells xs --Si x és parell, l'afegim al resultat i continuem analitzant recursivament. even és una funció que mira si són parells
   | otherwise = filtrarParells xs --Si no ho és, no l'afegim i continuem analitzant recursivament
+  
+-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-- Haskell notes de laboratori (2)
+-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 -- ===========================================================================
---Definim el main per a que compili el programa
+-- Exercici 1
 -- ===========================================================================
+
+--buscarPrimers: retorna només els nombres primers d’una llista d’enters
+buscarPrimers :: [Int] -> [Int]
+buscarPrimers [] = []
+buscarPrimers (x:xs)
+  | esPrimer x = x : buscarPrimers xs --Si x és primer, l’afegim i continuem analitzant de manera recursiva
+  | otherwise  = buscarPrimers xs --Si no ho és, l’ignorem i continuem analitzant de manera recursiva
+
+esPrimer :: Int -> Bool --Funció auxiliar booleana per determinar si és o no primer
+esPrimer n
+  | n < 2 = False
+  | otherwise = null [d | d <- [2..limit], n `mod` d == 0] --Aquí ens crea una llista de divisors de d i, si no hi ha cap divisor, la llista serà buida, per tant és primer
+    where
+    limit = floor (sqrt (fromIntegral n)) --fromIntegral converteix un enter en decimal. El floor arrodoneix cap a baix a l'enter més proper. Fem l'arrel de n ja que 9 és divisor de 3, per exemple.
+
+--runLengthEncoding: aplica compressió RLE a una cadena. Per exemple: "aaaabbbcca" → [('a',4),('b',3),('c',2),('a',1)]
+runLengthEncoding :: String -> [(Char, Int)] --Funció que dona un string i retorna una tupla de caràcter i enter
+runLengthEncoding [] = []
+runLengthEncoding (x:xs) = (x, 1 + length iguals) : runLengthEncoding resta --Recursivament aconsegueix tots els caràcters
+  where
+    iguals = takeWhile (== x) xs --Agafa tots els caràcters consecutius iguals a x
+    resta  = dropWhile (== x) xs --Elimina tots els caràcters consecutius iguals a x
+
+-- ===========================================================================
+-- Exercici 2 (recursiu)
+-- ===========================================================================
+
+--doblar: dobla cada element d’una llista
+doblar :: Num a => [a] -> [a] --Restricció de tipus nombre (Int, integer, double, float)
+doblar [] = []
+doblar (x:xs) = (2*x) : doblar xs
+
+--incrementar: suma 1 a cada element
+incrementar :: Num a => [a] -> [a]
+incrementar [] = []
+incrementar (x:xs) = (x+1) : incrementar xs
+
+--sumar: suma tots els elements
+sumar :: Num a => [a] -> a
+sumar [] = 0
+sumar (x:xs) = x + sumar xs
+
+--multiplicar: multiplica tots els elements
+multiplicar :: Num a => [a] -> a
+multiplicar [] = 1
+multiplicar (x:xs) = x * multiplicar xs
+
+-- ===========================================================================
+-- Exercici 3 (mapping)
+-- ===========================================================================
+
+--doblarMap: utilitza map per doblar elements
+doblarMap :: Num a => [a] -> [a]
+doblarMap = map (*2) --Multiplica cada element per 2
+
+--incrementarMap: utilitza map per incrementar
+incrementarMap :: Num a => [a] -> [a]
+incrementarMap = map (+1) --Suma 1 a cada element
+
+-- ===========================================================================
+-- Exercici 4 (folding)
+-- ===========================================================================
+
+--sumarFold: suma amb foldl
+sumarFold :: Num a => [a] -> a
+sumarFold = foldl (+) 0 --Suma tots els elements de l'array d'esquerra a dreta començant per un 0
+
+--multiplicarFold: multiplica amb foldl
+multiplicarFold :: Num a => [a] -> a
+multiplicarFold = foldl (*) 1 --Multiplica tots els elements de l'array, d'esquerra a dreta començant per un 1
+
+-- ===========================================================================
+-- Exercici 5
+-- ===========================================================================
+
+--sumarQuadratsRec: versió recursiva
+sumarQuadratsRec :: Num a => [a] -> a
+sumarQuadratsRec [] = 0
+sumarQuadratsRec (x:xs) = x*x + sumarQuadratsRec xs
+
+--sumarQuadratsMapFold: map + fold combinats
+sumarQuadratsMapFold :: Num a => [a] -> a
+sumarQuadratsMapFold xs = foldl (+) 0 (map (\x -> x*x) xs) --map suma els quadrats de cada element. el primer () és la funció i el segon () és la llista que se dona. El fold simplement suma tots els elements de l'array d'esquerra a dreta.
+
+-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-- Definim el main per a que compili el programa
+-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 main :: IO ()
 main = do
-
+ 
+  putStrLn "===== Exercici 2 ====="
   print (myHead [1,2,3,4,5])
   print (myTail [1,2,3,4,5])
   print (myTake 3 [1,2,3,4,5])
@@ -145,10 +246,12 @@ main = do
   print (mySum [1,2,3,4,5])
   print (myProduct [1,2,3,4,5])
   print (myReverse [1,2,3,4,5])
-  
+
+  putStrLn "\n===== Exercici 3 ====="
   print (myLast [1,2,3,4,5])
   print (myInit [1,2,3,4,5])
-  
+
+  putStrLn "\n===== Exercici 4 ====="  
   print (sumarQuadrats [1,2,3,4,5])
   print (esborrarDuplicats [1,2,2,3,3,4,5])
   print (esPalindrom1 [1,2,3,2,1])
@@ -159,3 +262,25 @@ main = do
   print (rotarLlista 2 [1,2,3,4,5])
   print (rotarLlista 7 [1,2,3,4,5])
   print (filtrarParells [1,2,3,4,5])
+  
+  putStrLn "\n===== Exercici 1 ====="
+  print (buscarPrimers [1,2,3,4,5,6,7,8,9,10])
+  print (runLengthEncoding "aaaabbbcca")  
+  
+  putStrLn "\n===== Exercici 2 ====="
+  print (doblar [1,2,3,4,5])
+  print (incrementar [1,2,3,4,5])
+  print (sumar [1,2,3,4,5])
+  print (multiplicar [1,2,3,4,5])  
+  
+  putStrLn "\n===== Exercici 3 ====="
+  print (doblarMap [1,2,3,4,5])
+  print (incrementarMap [1,2,3,4,5])  
+  
+  putStrLn "\n===== Exercici 4 ====="
+  print (sumarFold [1,2,3,4,5])
+  print (multiplicarFold [1,2,3,4,5])
+  
+  putStrLn "\n===== Exercici 5 ====="
+  print (sumarQuadratsRec [1,2,3,4,5])
+  print (sumarQuadratsMapFold [1,2,3,4,5])
